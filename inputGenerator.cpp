@@ -25,10 +25,11 @@ int main(int argv, char *argc[])
 		cout << "Para gerar outro valor : " << argc[0] << " <qntd-em-GB>" << endl;
 	}
 	else
-            {
-                tam = atoi(argc[1]);
-                cout << "Gerando entrada de tamanho = [" << tam << "] GB" << endl;
-            }
+	{
+		tam = atoi(argc[1]);
+	}
+
+	cout << "Gerando entrada de tamanho = [" << tam << "] GB" << endl;
 
 	if(tam < 0)
 	{
