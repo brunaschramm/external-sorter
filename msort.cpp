@@ -86,7 +86,7 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 	cout << "Total de arquivo parciais gerados: " << totalArquivos << endl;
 	char buffer[100];
 	FILE *arqAtual;
-	FILE *arqFinal = fopen(m_arqSaida.c_str(), "w");
+
 	int valorAtual, res = 0;
 
 	// Variavel contém a quantidade máxima de elementos de cada arquivo que pode ser carregada na memória
@@ -116,26 +116,18 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 			// Tem somente 1 arquivo, então basta salvá-lo como arquivo de texto
 			if(totalArquivos == 1)
 			{
-				// caso onde só tem 1 arquivo, então basta escrevê-lo no arquivo de texto
+				// caso onde só tem 1 arquivo, então basta renomeá-lo
 				cout << "Caso 1" << endl;
 				
-				// Aloca vetor com tamanho máximo de elementos suportados
-				int *array = ( int* ) malloc( sizeof(int) * m_valoresMemoria );
-				
-				sprintf (nomeArquivo, "tmp/sorted_%d_%d", m_etapa, idArquivo);
-				arqAtual = fopen(nomeArquivo, "r");
-				
-				// arquivo final gerado em formato .txt
-				while( lidos = fread (array, sizeof(int), m_valoresMemoria, arqAtual) )
+				sprintf (nomeArquivo, "mv tmp/sorted_%d_%d %s", m_etapa, idArquivo, m_arqSaida.c_str());
+				if( !system(nomeArquivo) )
 				{
-					cout << "Salvando " << arqFinal << endl;
-					for(int i = 0; i < lidos; i++)
-					{
-						fprintf (arqFinal, "%d\n", array[i]);
-					}
+					cout << "Arquivo [" << m_arqSaida << "] gerado com sucesso!" << endl;
 				}
-				free(array);
-				fclose(arqAtual);
+				else
+				{
+					cout << "Erro ao gerar arquivo [" << m_arqSaida << "]" << endl;
+				}
 				
 				// Sinaliza fim do loop principal
 				totalArquivos = 0;
@@ -143,7 +135,9 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 			else
 			{
 				// caso onde tem [1 < qntd de arquivos parciais <= k], então é feito merge desses arquivos salvando a saida no arquivo final
-				//cout << "Caso 2" << endl;
+				cout << "Caso 2" << endl;
+				
+				FILE *arqFinal = fopen(m_arqSaida.c_str(), "w");
 				
 				HeapOfPair heap = HeapOfPair(totalArquivos);
 				
@@ -173,25 +167,30 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 				// Enquanto ainda tiver algum arquivo para terminar de ler
 				while(arquivosCarregados < totalArquivos)
 				{
-					pairTmp = heap.extrairMin();
-					fprintf (arqFinal, "%d\n", pairTmp.first);
+					pairTmp = heap.extrairMinSemHeapificar();
+					//fprintf (arqFinal, "%d\n", pairTmp.first);
+					fwrite (&pairTmp.first, sizeof(int), 1, arqFinal);
 
 					if( !(res = fread (&pairTmp.first, sizeof(int), 1, pairTmp.second)) )
 					{
 						// Se não tem mais elemento para ler do arquivo, fecha-o e incrementa contador de arquivos finalizados
 						arquivosCarregados++;
 						fclose( pairTmp.second );
+						heap.minHeapify(0);
 					}
 					else
 					{
 						heap.adicionaValor(pairTmp);
-						heap.buildMinHeap();
+						//heap.buildMinHeap();
+						heap.minHeapify(0);
 					}
 				}
 				heap.deletar();
 				
 				// Sinaliza fim do loop principal
 				totalArquivos = 0;
+				
+				fclose(arqFinal);
 			}
 		}
 		else
@@ -207,9 +206,6 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 				//cout << "Caso 3" << endl;
 				int completados = 0; // quantidade de arquivos completados
 				
-				// aloca no maximo um vetor de qtdVias para mergear parcialmente os arquivos da etapa anterior
-				//arrayFiles = (pair<int, FILE*>*) malloc (m_qtdVias * sizeof (pair<int, FILE*>));
-				
 				// armazenará a contagem de quantos arquivos foram realmente carregados. Sendo i <= m_qtdVias.
 				HeapOfPair heap = HeapOfPair(m_qtdVias);
 				
@@ -221,12 +217,15 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 					indexLeituraArquivos++;
 					
 					arqAtual = fopen(nomeArquivo, "r");
-					
-					if(!(res = fread (&valorAtual, sizeof(int), 1, arqAtual)) ) break;
-					
+
+					if(!(res = fread (&valorAtual, sizeof(int), 1, arqAtual)) ) 
+					{
+						fclose(arqAtual);
+						break;
+					}
+
 					arquivosCarregados++;
-					
-					//arrayFiles[i-1] = make_pair<int, FILE*>(valorAtual, arqAtual);
+
 					heap.adicionaValor( make_pair<int, FILE*>(valorAtual, arqAtual) );
 				}
 				
@@ -254,6 +253,7 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 						if(!(res = fread (&pairTmp.first, sizeof(int), 1, pairTmp.second)) )
 						{
 							completados++;
+							fclose(pairTmp.second);
 						}
 						else
 						{
@@ -265,13 +265,10 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 					heap.deletar();
 				}
 				totalArquivos++;
-				cout << "Acabou via" << endl;
 			}
 			m_etapa++;
 		}
 	}
-	
-	fclose(arqFinal);
 	
 	return;
 }

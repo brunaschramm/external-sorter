@@ -104,31 +104,6 @@ class HeapOfPair
 		
 		inline int getRight(int &index){ return (index*2) + 2; }
 		
-		void minHeapify(int &index)
-		{			
-			int l = getLeft(index);
-			
-			int r = getRight(index);
-			
-			int menor = index;
-			
-			//cout << "Heapfy " << index << endl;
-			//cout << "Heapfy l " << l << endl;
-			//cout << "Heapfy r " << r << endl;
-			//cout << "Heapfy indexHeap " << indexHeap << endl;
-			if( l < indexHeap && array[l].first < array[index].first ) menor = l;
-			//cout << "Heapfy menor" << menor << endl;
-			if (r < indexHeap && array[r].first < array[menor].first) menor = r;
-			//cout << "Heapfy menor" << menor << endl;
-			if ( menor != index )
-			{
-				pair<int, FILE*> aux = array[index];
-				array[index] = array[menor];
-				array[menor] = aux;
-				minHeapify(menor);
-			}
-		}
-		
 	public:
 		HeapOfPair(int &tam)
 		{
@@ -166,6 +141,15 @@ class HeapOfPair
 			minHeapify(PRIM);
 			return min;
 		}
+
+		pair<int, FILE*> extrairMinSemHeapificar()
+		{
+			pair<int, FILE*> min = array[PRIM];
+			indexHeap--;
+			array[PRIM] = array[indexHeap];
+			//minHeapify(PRIM);
+			return min;
+		}
 		
 		void buildMinHeap()
 		{
@@ -173,6 +157,31 @@ class HeapOfPair
 				for(int i = (indexHeap-1)/2; i >= 0; i--) {
 					minHeapify(i);
 				}
+			}
+		}
+		
+		void minHeapify(int index)
+		{			
+			int l = getLeft(index);
+			
+			int r = getRight(index);
+			
+			int menor = index;
+			
+			//cout << "Heapfy " << index << endl;
+			//cout << "Heapfy l " << l << endl;
+			//cout << "Heapfy r " << r << endl;
+			//cout << "Heapfy indexHeap " << indexHeap << endl;
+			if( l < indexHeap && array[l].first < array[index].first ) menor = l;
+			//cout << "Heapfy menor" << menor << endl;
+			if (r < indexHeap && array[r].first < array[menor].first) menor = r;
+			//cout << "Heapfy menor" << menor << endl;
+			if ( menor != index )
+			{
+				pair<int, FILE*> aux = array[index];
+				array[index] = array[menor];
+				array[menor] = aux;
+				minHeapify(menor);
 			}
 		}
 };
