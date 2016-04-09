@@ -132,7 +132,7 @@ class HeapOfPair
 				indexHeap++;
 			}
 		}
-		
+
 		pair<int, FILE*> extrairMin()
 		{
 			pair<int, FILE*> min = array[PRIM];
@@ -142,19 +142,30 @@ class HeapOfPair
 			return min;
 		}
 
-		pair<int, FILE*> extrairMinSemHeapificar()
+		pair<int, FILE*> consultaMin()
 		{
-			pair<int, FILE*> min = array[PRIM];
+			return array[PRIM];
+		}
+		
+		void removeMin()
+		{
 			indexHeap--;
 			array[PRIM] = array[indexHeap];
-			//minHeapify(PRIM);
-			return min;
+			minHeapify(PRIM);
+		}
+		
+		void adicionaValorInicio(pair<int, FILE*> valor)
+		{
+			array[0] = valor;
+			minHeapify(0);
 		}
 		
 		void buildMinHeap()
 		{
-			if (indexHeap > 1) {
-				for(int i = (indexHeap-1)/2; i >= 0; i--) {
+			if (indexHeap > 1) 
+			{
+				for(int i = (indexHeap-1)/2; i >= 0; i--) 
+				{
 					minHeapify(i);
 				}
 			}
@@ -168,14 +179,10 @@ class HeapOfPair
 			
 			int menor = index;
 			
-			//cout << "Heapfy " << index << endl;
-			//cout << "Heapfy l " << l << endl;
-			//cout << "Heapfy r " << r << endl;
-			//cout << "Heapfy indexHeap " << indexHeap << endl;
 			if( l < indexHeap && array[l].first < array[index].first ) menor = l;
-			//cout << "Heapfy menor" << menor << endl;
+			
 			if (r < indexHeap && array[r].first < array[menor].first) menor = r;
-			//cout << "Heapfy menor" << menor << endl;
+			
 			if ( menor != index )
 			{
 				pair<int, FILE*> aux = array[index];

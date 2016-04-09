@@ -167,7 +167,7 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 				// Enquanto ainda tiver algum arquivo para terminar de ler
 				while(arquivosCarregados < totalArquivos)
 				{
-					pairTmp = heap.extrairMinSemHeapificar();
+					pairTmp = heap.consultaMin();
 					//fprintf (arqFinal, "%d\n", pairTmp.first);
 					fwrite (&pairTmp.first, sizeof(int), 1, arqFinal);
 
@@ -176,13 +176,12 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 						// Se não tem mais elemento para ler do arquivo, fecha-o e incrementa contador de arquivos finalizados
 						arquivosCarregados++;
 						fclose( pairTmp.second );
-						heap.minHeapify(0);
+						heap.removeMin();
 					}
 					else
 					{
-						heap.adicionaValor(pairTmp);
+						heap.adicionaValorInicio(pairTmp);
 						//heap.buildMinHeap();
-						heap.minHeapify(0);
 					}
 				}
 				heap.deletar();
@@ -248,17 +247,20 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 					int aux = 0;
 					while(completados < arquivosCarregados)
 					{
-						pairTmp = heap.extrairMin();
+						//pairTmp = heap.extrairMin();
+						pairTmp = heap.consultaMin();
 						fwrite (&pairTmp.first, sizeof(unsigned int), 1, novoArq);
 						if(!(res = fread (&pairTmp.first, sizeof(int), 1, pairTmp.second)) )
 						{
 							completados++;
 							fclose(pairTmp.second);
+							heap.removeMin();
 						}
 						else
 						{
-							heap.adicionaValor(pairTmp);
-							heap.buildMinHeap();
+							heap.adicionaValorInicio(pairTmp);
+							//heap.adicionaValor(pairTmp);
+							//heap.buildMinHeap();
 						}
 					}
 					fclose(novoArq);
