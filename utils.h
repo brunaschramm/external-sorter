@@ -1,16 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <math.h>
+#include <limits>
+
 #include "heap.h"
 
 void limparAmbiente()
 {
-	system("rm -rf tmp/");
+	int res = system("rm -rf tmp/");
 }
 
 void prepararAmbiente()
 {
 	limparAmbiente();
-	system("mkdir tmp/");
+	int res = system("mkdir tmp/");
 }
 
 //Retorna UNIX epoch, com preciso at nanossegundos
@@ -26,7 +33,7 @@ int compareInt (const void * a, const void * b)
   return ( *(int*)a - *(int*)b );
 }
 
-void salvarArquivoOrdenadoBinario( char *buffer, int *array, int &tamanho)
+void salvarArquivoBinario( char *buffer, int *array, int &tamanho)
 {
 	if(tamanho == 0) return;
 	
@@ -36,7 +43,7 @@ void salvarArquivoOrdenadoBinario( char *buffer, int *array, int &tamanho)
 	fclose(arq);
 }
 
-void salvarArquivoOrdenadoTexto( char *buffer, int *array, int &tamanho)
+void salvarArquivoTexto( char *buffer, int *array, int &tamanho)
 {
 	if(tamanho == 0) return;
 	

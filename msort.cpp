@@ -40,6 +40,16 @@ int ExternalSorter::gerarArquivosBase()
 {
 	// Aloca vetor com tamanho máximo de elementos suportados
 	int *array = ( int* ) malloc( sizeof(int) * m_valoresMemoria );
+	cout << "Valores na memoria = " << m_valoresMemoria << endl;
+	while (!array)
+	{
+		// Não conseguiu alocar array. Memória disponivel informada deve ser maior que a máquina realmente tem.
+		// Reduz os valores suportes na memória pela metade, até que caibam na memória e consiga alocar o vetor.
+		m_valoresMemoria /= 2;
+		array = ( int* ) malloc( sizeof(int) * m_valoresMemoria );
+	}
+	
+	cout << "Valores na memoria = " << m_valoresMemoria << endl;
 	
 	// Guarda o contador usado para identificar os arquivos gerados
 	int idArquivo = 1;
@@ -58,7 +68,7 @@ int ExternalSorter::gerarArquivosBase()
 		
 		// Salva valores ordenados em um arquivo parcial
 		sprintf (nomeArquivo, "tmp/sorted_%d_%d", m_etapa, idArquivo);
-		salvarArquivoOrdenadoBinario( nomeArquivo, array, lidos );
+		salvarArquivoBinario( nomeArquivo, array, lidos );
 		
 		// Incrementa identificador de arquivos parciais
 		idArquivo++;
@@ -225,7 +235,7 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 				{
 					// caso onde só sobrou 1 arquivo parcial, então ele é renomeado para ser processado na próxima etapa
 					sprintf (nomeArquivo, "mv tmp/sorted_%d_%d tmp/sorted_%d_%d", m_etapa, indexEscritaArquivos-1, m_etapa+1, indexEscritaArquivos);
-					system(nomeArquivo);
+					int res = system(nomeArquivo);
 				} 
 				else 
 				{
@@ -269,7 +279,7 @@ void ExternalSorter::mergeArquivosOrdenados( int &totalArquivos )
 void ExternalSorter::executar()
 {
 	// Todo : remover funcao - somente para teste
-	contarValoresArquivo();
+	//contarValoresArquivo();
 	
 	if( validarParametros() ) 
 	{
@@ -296,7 +306,7 @@ int main(int argv, char *argc[])
 	cout << "Arquivo de entrada = " << arquivoEntrada << endl;
 	string arquivoSaida(argc[2]);
 	cout << "Arquivo de saida = " << argc[2] << endl;
-	int memoriaDisponivel = atoi(argc[3]);
+	unsigned long int memoriaDisponivel = atol(argc[3]);
 	cout << "Memória disponível = " << memoriaDisponivel << endl;
 	int qtdVias = atoi(argc[4]);
 	cout << "Número de vias = " << qtdVias << endl;
