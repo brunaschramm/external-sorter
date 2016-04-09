@@ -35,25 +35,25 @@ int compareInt (const void * a, const void * b)
 
 void salvarArquivoBinario( char *buffer, int *array, int &tamanho)
 {
-	if(tamanho == 0) return;
-	
+    if(tamanho == 0) return;
+
     cout << "Salvando " << buffer << endl;
-	FILE *arq = fopen(buffer,"w");
-	fwrite (array, sizeof(int), tamanho, arq);
-	fclose(arq);
+    FILE *arq = fopen(buffer,"w");
+    fwrite (array, sizeof(int), tamanho, arq);
+    fclose(arq);
 }
 
 void salvarArquivoTexto( char *buffer, int *array, int &tamanho)
 {
-	if(tamanho == 0) return;
-	
+    if(tamanho == 0) return;
+
     cout << "Salvando " << buffer << endl;
-	FILE *arq = fopen(buffer,"w");
-	for(int i = 0; i < tamanho; i++)
-	{
-		fprintf (arq, "%d\n", array[i]);
-	}
-	fclose(arq);
+    FILE *arq = fopen(buffer,"w");
+    for(int i = 0; i < tamanho; i++)
+    {
+        fprintf (arq, "%d\n", array[i]);
+    }
+    fclose(arq);
 }
 
 /*
@@ -62,7 +62,7 @@ void salvarArquivoOrdenado( Heap &heap, char *buffer)
     cout << "Salvando " << buffer << endl;
 
 	FILE *arq = fopen(buffer,"w");
-	while(!heap.empty()) 
+	while(!heap.empty())
 	{
 		fprintf (arq, "%d\n", heap.extrairMin());
 	}
