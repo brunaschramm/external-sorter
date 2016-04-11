@@ -11,23 +11,14 @@ using namespace std;
 
 const static unsigned long int GB = 1024*1024*1024;
 
-void prepararAmbiente()
-{
-	system("mkdir input/");
-}
-
 int main(int argv, char *argc[])
 {
-	int tam = 4;
 	if(argv != 2)
 	{
-		cout << "Gerando entrada de tamanho = [4] GB" << endl;
-		cout << "Para gerar outro valor : " << argc[0] << " <qntd-em-GB>" << endl;
+		cout << "Faltou informar o tamanho em GB do arquivo. Execute: " << argc[0] << " <qntd-em-GB>" << endl;
+		exit(0);
 	}
-	else
-	{
-		tam = atoi(argc[1]);
-	}
+	int tam = atoi(argc[1]);
 
 	cout << "Gerando entrada de tamanho = [" << tam << "] GB" << endl;
 
@@ -37,8 +28,6 @@ int main(int argv, char *argc[])
 		exit(0);
 	}
 
-	prepararAmbiente();
-
 	int randValue = 0;
 
 	/* initialize random seed: */
@@ -46,7 +35,7 @@ int main(int argv, char *argc[])
 
 	unsigned long int QTD_VALORES = (tam * GB) / 4;
 
-	FILE *arqBin = fopen("input/input.bin", "w");
+	FILE *arqBin = fopen("input.bin", "w");
 	unsigned long int i;
 	for (i = 0; i < QTD_VALORES; i++)
 	{
@@ -56,7 +45,7 @@ int main(int argv, char *argc[])
 
 	fclose(arqBin);
 
-	cout << "Arquivo gerado com sucesso! Total de valores = " << i << endl;
+	cout << "Arquivo [input.bin] gerado com sucesso! Total de valores = " << i << endl;
 
 	return 0;
 }
